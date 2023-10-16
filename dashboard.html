@@ -1,0 +1,164 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="./index.css">
+</head>
+<body>
+    
+    <ul class="navbar">
+        <li class="nav-item"><a href="./regestration.html">Regestration</a></li>
+        <li class="nav-item"><a href="./dashboard.html">Dashboard</a> </li>
+        <li class="nav-item"><a href="./vaccinated.html">Vaccinated </a></li>
+    </ul>
+    <table>
+        <thead>
+            <tr>
+                <th>Unique ID</th>
+                <th>Name</th>
+                <th>Age</th>
+                <th>Designation </th>
+                <th>Priority </th>
+                <th>Vaccine</th>
+                <th>OTP</th>
+                <th>Delete</th>
+                <th>Vaccinate</th>
+            </tr>
+        </thead>
+        <tbody id="tbody">
+
+        </tbody>
+    </table>
+
+    <div class="popup" id="validationpopup">
+        <div class="popup-content">
+            <span class="close-button" onclick="closePopup()">&times;</span>
+            <div id="loading">Loading Please wait...</div>
+            <h2>Enter the OTP</h2>
+            
+            <input type="text" id="otpinput" placeholder="Enter OTP">
+            <button onclick="validateOTP()">Validate</button>
+        </div>
+    </div>
+
+</body>
+<script>
+    let targetotp = {
+        otp:'',
+        user:''
+    }
+    let registerd = JSON.parse(localStorage.getItem('regi')) || []
+    function addtotable(list){
+
+        const tablebody = document.getElementById('tbody')
+        tablebody.innerText = ''
+        for(const user of list){
+            let row = document.createElement('tr')
+            let c0 = document.createElement('th')
+            let c1 = document.createElement('th')
+            let c2 = document.createElement('th')
+            let c3 = document.createElement('th')
+            let c4 = document.createElement('th')
+            let c5 = document.createElement('th')
+            let c6 = document.createElement('th')
+            
+            c0.textContent = user.unique
+            c1.textContent = user.Name
+            c2.textContent = user.Age
+            c3.textContent = user.Designation
+            c4.textContent = user.Vaccine
+            c5.textContent = user.priority
+            
+            let del_button = document.createElement('th')
+            let del = document.createElement('button')
+            del.textContent = 'Delete'
+            del.classList.add('delete-button')
+            del_button.append(del)
+            /////
+            del.addEventListener('click',(e)=>{
+                e.preventDefault()
+                let new_list = registerd.filter((item)=>item.unique !==user.unique)
+                localStorage.setItem('regi',JSON.stringify(new_list))
+                tablebody.removeChild(row)
+            })
+            /////
+            let val_button = document.createElement('th')
+            let val = document.createElement('button')
+            val.textContent = 'Validate'
+            val.classList.add('val-button')
+            val_button.append(val)
+            
+            let otp_col = document.createElement('th')
+            let otp = document.createElement('p')
+            otp.textContent = generate()
+            otp_col.append(otp)
+            ///////
+            val.addEventListener('click',(e)=>{
+                e.preventDefault()
+                showPopup(otp.textContent)
+                targetotp.otp = otp.textContent
+                targetotp.user = user
+                
+            })
+            ////////
+
+            row.append(c0,c1,c2,c3,c4,c5,otp_col,del_button,val_button)
+            tablebody.append(row)
+        }
+
+    }
+    addtotable(registerd)
+    function validateOTP(){
+        const otp = document.getElementById('otpinput').value
+        if(String(otp) == targetotp.otp){
+            document.getElementById('loading').style.display = 'block'
+            alert(`${targetotp.user.Name} Added to Queue`)
+            setTimeout(()=>{
+                
+                alert(`Vaccinating ${targetotp.user.Vaccine}`)
+            },5000)
+            setTimeout(()=>{
+                alert(`${targetotp.user.Name} Vaccinated`)
+                document.getElementById('loading').style.display = 'none'
+                closePopup()
+                let validate = JSON.parse(localStorage.getItem('veci'))||[]
+                validate.push(targetotp.user)
+                localStorage.setItem('veci',JSON.stringify(validate))
+                let new_dom = registerd.filter((item)=>item.unique!==targetotp.user.unique)
+                registerd = new_dom
+                console.log(new_dom);
+                localStorage.setItem('regi',JSON.stringify(new_dom))
+                addtotable(new_dom)
+
+
+                targetotp = {
+                otp:'',
+                user:''
+                  }
+            },10000)
+
+
+            
+            
+        }
+        else{
+            alert('Invalid OTP')
+        }
+
+    }
+    function showPopup(){
+        
+        document.getElementById('validationpopup').style.display = 'block'
+    }
+    function closePopup(){
+        document.getElementById('validationpopup').style.display = 'none'
+    }
+    function generate(){
+        const mid = 1000
+        const max = 9999
+        const otp = Math.floor(Math.random()*(max-mid+1))+mid
+        return otp.toString()
+    }
+</script>
+</html>

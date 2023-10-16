@@ -1,0 +1,86 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="./index.css">
+</head>
+<body>
+    <ul class="navbar">
+        <li class="nav-item"><a href="./regestration.html">Regestration</a></li>
+        <li class="nav-item"><a href="./dashboard.html">Dashboard</a> </li>
+        <li class="nav-item"><a href="./vaccinated.html">Vaccinated </a></li>
+    </ul>
+    <h1>Regestration</h1>
+    <form  onsubmit="return validate(event)">
+        <label for="username">Uinque ID:</label>
+        <input type="text" id="username" required><br><br>
+        <label for="name">Name :</label>
+        <input type="text" id="Name" required><br><br>
+        <label for="age">Age</label>
+        <input type="number" id="age" required><br><br>
+        <label for="Designation">Designation </label>
+        <input type="text" id="Designation" required><br><br>
+        <label for="Priority">Priority </label>
+        <select name="priority" id="priority" required>
+            <option value="p0">p0</option>
+            <option value="p1">p1</option>
+            <option value="p2">p2</option>
+            <option value="p3">p3</option>
+        </select><br><br>
+        <label for="vaccine">vaccine</label>
+        <select name="Vaccine" id="Vaccine" required>
+            <option value="Covishield">Covishield </option>
+            <option value="Covaxin">Covaxin </option>
+            <option value="Sputnik">Sputnik</option>
+        
+        </select><br><br>
+
+        <input type="submit" value="Register">
+
+    </form>
+</body>
+<script>
+    let register = JSON.parse(localStorage.getItem('regi')) || []
+    function validate(e){
+        e.preventDefault()
+        let unique = document.getElementById('username').value
+        let Name = document.getElementById('Name').value
+        let Age = document.getElementById('age').value
+        let Designation = document.getElementById('Designation').value
+        let priority = document.getElementById('priority').value
+        let Vaccine = document.getElementById('Vaccine').value
+        console.log(unique,Name,Age,Designation,priority,Vaccine);
+        let flag = false
+        for(let i=0;i<register.length;i++){
+            if(register[i].unique==unique){
+                flag=true
+                break
+            }
+        }
+        if(flag){
+            alert('User already exist')
+        }
+        else{
+            // let user = {
+            //     unique:unique,
+            //     Name:Name,
+            //     Age:Age,
+            //     Designation:Designation,
+            //     priority:priority,
+            //     Vaccine:Vaccine
+            // }
+            register.push({
+                unique:unique,
+                Name:Name,
+                Age:Age,
+                Designation:Designation,
+                priority:priority,
+                Vaccine:Vaccine
+            })
+            localStorage.setItem('regi',JSON.stringify(register))
+            alert('User registered')
+        }
+        }
+</script>
+</html>
